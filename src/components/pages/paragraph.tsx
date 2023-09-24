@@ -4,6 +4,7 @@ import { ClockIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
 import { useTimer } from "react-timer-hook";
 import { EffectCallback, useEffect, useRef, useState } from "react";
+import OpenAI from "openai";
 
 export const useEffectOnce = (effect: () => void | (() => void)) => {
     const destroyFunc = useRef<void | (() => void)>();
@@ -37,12 +38,16 @@ export const useEffectOnce = (effect: () => void | (() => void)) => {
 
 export default function Paragraph({
     topic,
-    setTopic,
     setPage,
+    setContext,
 }: {
     topic: z.infer<typeof formSchema>;
     setTopic: (topic: z.infer<typeof formSchema>) => void;
     setPage: (page: string) => void;
+    context: OpenAI.Chat.ChatCompletionCreateParams["messages"];
+    setContext: (
+        context: OpenAI.Chat.ChatCompletionCreateParams["messages"]
+    ) => void;
 }) {
     const { seconds, minutes, restart } = useTimer({
         expiryTimestamp: new Date(),
@@ -62,6 +67,7 @@ export default function Paragraph({
             if (res.ok) {
                 const data = await res.json();
                 setParagraph(data.paragraph);
+                setContext(data.messages);
                 setGenerating(false);
                 const date = new Date();
                 date.setSeconds(date.getSeconds() + 300);

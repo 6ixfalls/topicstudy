@@ -21,10 +21,19 @@ function RenderPage(page: PageType, state: any) {
 export default function Home() {
     const [topic, setTopic] = useState<z.infer<typeof formSchema>>();
     const [page, setPage] = useState<PageType>("topic");
+    const [context, setContext] = useState<any>([]);
+    const [score, setScore] = useState<number>(0);
+    const [questions, setQuestions] = useState<any>([]);
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-between p-24">
-            {RenderPage(page, { topic, setTopic, setPage })}
+            {RenderPage(page, {
+                context,
+                setContext,
+                topic,
+                setTopic,
+                setPage,
+            })}
         </main>
     );
 }
