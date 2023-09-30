@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
             {
                 role: "system",
                 content:
-                    "Create a 2 paragraph passage about the following topic provided by the user. Write the passage in a way that it is easy to understand, and easy to generate questions about afterwards. Do not include questions. Your response should only consist of the passage.",
+                    "Create a 2 paragraph passage about a random subtopic of the following topic provided by the user. Write the passage in a way that it is easy to understand, and easy to generate questions about afterwards. Do not include questions. Your response should only consist of the passage.",
             },
             {
                 role: "user",

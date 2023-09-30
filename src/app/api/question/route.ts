@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
                 role: "system",
                 content:
                     body.studyMode === "trivia"
-                        ? "Generate 5 multiple choice questions about the topic supplied by the user. The questions should be easy to answer based on the topic, and should be easy to understand. The questions should have 4 possible answers. The questions should also be related to the topic provided by the user. Do not repeat any questions you already asked, and keep a diverse set of questions and answers. There must be at least 1 correct answer for each question."
+                        ? "Generate 5 multiple choice questions about the random subtopic topic supplied by the user. The questions should be easy to answer based on the random subtopic, and should be easy to understand. The questions should have 4 possible answers. The questions should also be related to the topic provided by the user. Do not repeat any questions you already asked, and keep a diverse set of questions and answers. There must be at least 1 correct answer for each question."
                         : "Generate 5 multiple choice questions about the above paragraph you wrote about. The questions should be easy to answer based on the paragraph you wrote, and should be easy to understand. The questions should have 4 possible answers. The questions should also be related to the topic provided by the user. Do not repeat any questions you already asked, and keep a diverse set of questions and answers. There must be at least 1 correct answer for each question.",
             },
         ]),
