@@ -24,3 +24,7 @@ export async function POST(request: NextRequest) {
         paragraph: completion.choices[0].message.content,
     });
 }
+
+export const config = {
+    runtime: "nodejs",
+};

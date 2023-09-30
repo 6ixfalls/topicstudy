@@ -78,3 +78,7 @@ export async function POST(request: NextRequest) {
         questions: questions.questions,
     });
 }
+
+export const config = {
+    runtime: "nodejs",
+};
