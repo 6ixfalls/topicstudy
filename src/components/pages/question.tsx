@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useEffectOnce } from "./paragraph";
 import * as z from "zod";
 import { formSchema } from "./topic";
@@ -66,6 +66,7 @@ export default function Question({
         resolver: zodResolver(questionSchema),
     });
     const [generating, setGenerating] = useState<boolean>(true);
+    const [generatedQuestions, setGeneratedQuestions] = useState<any[]>([]);
     const [question, setQuestion] = useState<string>("");
     const [answers, setAnswers] = useState<any[]>([]);
     const [submitted, setSubmitted] = useState<boolean>(false);
@@ -83,13 +84,23 @@ export default function Question({
         }).then(async (res) => {
             if (res.ok) {
                 const data = await res.json();
-                setQuestion(data.question);
-                setAnswers(data.answers);
+                setGeneratedQuestions(data.questions);
                 setContext(data.messages);
                 setGenerating(false);
             }
         });
     });
+
+    useEffect(() => {
+        if (generatedQuestions.length > 0) {
+            setQuestion(generatedQuestions[questionIndex].question);
+            setAnswers(generatedQuestions[questionIndex].answers);
+            setSubmitted(false);
+            setCorrect(false);
+            form.reset();
+        }
+    }, [questionIndex, generatedQuestions, form]);
+
     function onSubmit(values: z.infer<typeof questionSchema>) {
         const answer = answers.find(
             (answer) => answer.answer === values.answer
@@ -148,38 +159,33 @@ export default function Question({
                                             >
                                                 {answers.map((answer, i) => (
                                                     <FormItem
-                                                        className="basis-0 flex-grow"
+                                                        className={
+                                                            getResultColor(
+                                                                form,
+                                                                submitted,
+                                                                answer
+                                                            ) +
+                                                            " basis-0 flex-grow flex items-center space-x-2 space-y-0 p-2 rounded-full transition-colors"
+                                                        }
                                                         key={i}
                                                     >
                                                         <FormControl>
-                                                            <div
-                                                                className={
-                                                                    getResultColor(
-                                                                        form,
-                                                                        submitted,
-                                                                        answer
-                                                                    ) +
-                                                                    " flex items-center space-x-2 p-2 rounded-full transition-colors"
+                                                            <RadioGroupItem
+                                                                value={
+                                                                    answer.answer
                                                                 }
-                                                            >
-                                                                <RadioGroupItem
-                                                                    value={
-                                                                        answer.answer
-                                                                    }
-                                                                    disabled={
-                                                                        submitted
-                                                                    }
-                                                                    id={`answer-${i}`}
-                                                                />
-                                                                <Label
-                                                                    htmlFor={`answer-${i}`}
-                                                                >
-                                                                    {
-                                                                        answer.answer
-                                                                    }
-                                                                </Label>
-                                                            </div>
+                                                                disabled={
+                                                                    submitted
+                                                                }
+                                                                id={`answer-${i}`}
+                                                            />
                                                         </FormControl>
+                                                        <Label
+                                                            htmlFor={`answer-${i}`}
+                                                            className=""
+                                                        >
+                                                            {answer.answer}
+                                                        </Label>
                                                     </FormItem>
                                                 ))}
                                             </RadioGroup>
@@ -192,7 +198,10 @@ export default function Question({
                                 <Button
                                     type="button"
                                     onClick={() => {
-                                        if (results.length === 5) {
+                                        if (
+                                            results.length ===
+                                            generatedQuestions.length
+                                        ) {
                                             setPage("results");
                                         } else {
                                             setQuestionIndex(questions);

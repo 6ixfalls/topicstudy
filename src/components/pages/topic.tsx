@@ -26,6 +26,35 @@ import { QuestionMarkIcon, TextAlignLeftIcon } from "@radix-ui/react-icons";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useRef } from "react";
 
+const randomTopics = [
+    "Physics",
+    "Chemistry",
+    "Biology",
+    "History",
+    "Geography",
+    "Math",
+    "English",
+    "Computer Science",
+    "Art",
+    "Music",
+    "Economics",
+    "Business",
+    "Psychology",
+    "Sociology",
+    "Anthropology",
+    "Philosophy",
+    "Political Science",
+    "Law",
+    "Medicine",
+    "Engineering",
+    "Agriculture",
+    "Architecture",
+    "Accounting",
+    "Finance",
+    "Marketing",
+    "Management",
+];
+
 export const formSchema = z.object({
     topic: z.string().min(2, {
         message: "Topic must be at least 2 characters.",
@@ -58,6 +87,9 @@ export default function Topic({
     }
 
     const formRef = useRef<HTMLFormElement>(null);
+    const topic = useRef<string>(
+        randomTopics[Math.floor(Math.random() * randomTopics.length)]
+    );
 
     return (
         <Form {...form}>
@@ -73,7 +105,7 @@ export default function Topic({
                         <FormItem>
                             <FormLabel>Topic</FormLabel>
                             <FormControl>
-                                <Input placeholder="Physics" {...field} />
+                                <Input placeholder={topic.current} {...field} />
                             </FormControl>
                             <FormDescription>
                                 What topic are you studying?

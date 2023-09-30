@@ -14,27 +14,35 @@ export async function POST(request: NextRequest) {
                 role: "system",
                 content:
                     body.studyMode === "trivia"
-                        ? "Generate a multiple choice question about the topic supplied by the user. The question should be easy to answer based on the topic, and should be easy to understand. The question should have 4 possible answers. The question should also be related to the topic provided by the user. Do not repeat any questions you already asked, and keep a diverse set of questions and answers. There must be at least 1 correct answer."
-                        : "Generate a multiple choice question about the above paragraph you wrote about. The question should be easy to answer based on the paragraph you wrote, and should be easy to understand. The question should have 4 possible answers. The question should also be related to the topic provided by the user. Do not repeat any questions you already asked, and keep a diverse set of questions and answers. There must be at least 1 correct answer.",
+                        ? "Generate 5 multiple choice questions about the topic supplied by the user. The questions should be easy to answer based on the topic, and should be easy to understand. The questions should have 4 possible answers. The questions should also be related to the topic provided by the user. Do not repeat any questions you already asked, and keep a diverse set of questions and answers. There must be at least 1 correct answer for each question."
+                        : "Generate 5 multiple choice questions about the above paragraph you wrote about. The questions should be easy to answer based on the paragraph you wrote, and should be easy to understand. The questions should have 4 possible answers. The questions should also be related to the topic provided by the user. Do not repeat any questions you already asked, and keep a diverse set of questions and answers. There must be at least 1 correct answer for each question.",
             },
         ]),
         model: "gpt-3.5-turbo-0613",
         functions: [
             {
-                name: "generate_question",
+                name: "generate_questions",
                 description:
-                    "Add a question to the context with the question and 4 possible answers.",
+                    "Add 5 questions to the context with the question and 4 possible answers.",
                 parameters: {
                     type: "object",
                     properties: {
-                        question: { type: "string" },
-                        answers: {
+                        questions: {
                             type: "array",
                             items: {
                                 type: "object",
                                 properties: {
-                                    answer: { type: "string" },
-                                    correct: { type: "boolean" },
+                                    question: { type: "string" },
+                                    answers: {
+                                        type: "array",
+                                        items: {
+                                            type: "object",
+                                            properties: {
+                                                answer: { type: "string" },
+                                                correct: { type: "boolean" },
+                                            },
+                                        },
+                                    },
                                 },
                             },
                         },
@@ -55,17 +63,18 @@ export async function POST(request: NextRequest) {
     if (!completion.choices[0].message.function_call) {
         return new NextResponse("Internal Server Error", { status: 400 });
     }
-    const question = await JSON.parse(
+    const questions = await JSON.parse(
         completion.choices[0].message.function_call.arguments
     );
     return NextResponse.json({
         messages: params.messages.concat([
             {
                 role: "assistant",
-                content: question.question,
+                content: questions.questions
+                    .map((q: any, i: number) => `${i}. ${q.question}`)
+                    .join("\n"),
             },
         ]),
-        question: question.question,
-        answers: question.answers,
+        questions: questions.questions,
     });
 }

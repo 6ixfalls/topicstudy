@@ -15,7 +15,7 @@ function RenderPage(page: PageType, state: any) {
         case "paragraph":
             return <Paragraph {...state} />;
         case "question":
-            return <Question {...state} key={state.questionIndex} />;
+            return <Question {...state} />;
         case "results":
             return <Results {...state} />;
     }

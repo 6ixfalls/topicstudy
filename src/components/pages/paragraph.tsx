@@ -90,6 +90,7 @@ export default function Paragraph({
                     variant="secondary"
                     className="m-2"
                     onClick={() => restart(new Date(), true)}
+                    disabled={generating}
                 >
                     Skip Timer
                 </Button>
